@@ -1,3 +1,15 @@
+// ====== FIREBASE SOZLAMASI ======
+// Firebase konsolidan olingan config'ni shu yerga qo'ying (README.txt ga qarang)
+const firebaseConfig = {
+  apiKey: "SHU_YERGA",
+  authDomain: "SHU_YERGA",
+  projectId: "SHU_YERGA",
+  appId: "SHU_YERGA"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+let allProviders = []; // hamma foydalanuvchilar uchun umumiy ro'yxat
+
 // ====== Sozlamalar ======
 const TYPES = {
   traktor: "🚜 Traktor (yer haydash)",
@@ -6,7 +18,6 @@ const TYPES = {
   kamaz: "🚚 KamAZ",
   boshqa: "🔧 Boshqa"
 };
-const STORAGE_KEY = "texnika_providers";
 
 // ====== Yordamchi funksiyalar ======
 const $ = id => document.getElementById(id);
@@ -14,11 +25,7 @@ let myPos = null;   // qidiruvchining joylashuvi
 let regPos = null;  // ro'yxatdan o'tuvchining joylashuvi
 let filter = "";
 
-function loadData() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch (e) { return []; }
-}
-function saveData(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+function loadData() { return allProviders.map(r => ({ ...r })); }
 
 function escapeHtml(s) {
   const d = document.createElement("div");
@@ -118,22 +125,29 @@ $("regForm").onsubmit = e => {
   if (phone.replace(/\D/g, "").length < 9) { $("msg").textContent = "Telefon raqamni to‘g‘ri kiriting"; return; }
   if (!regPos) { $("msg").textContent = "Joylashuvingizni aniqlang — mijozlar sizni shu orqali topadi"; return; }
 
-  const data = loadData().filter(r => r.phone !== phone); // bir raqam — bitta e'lon
-  data.push({
+  const id = phone.replace(/\D/g, ""); // bir raqam — bitta e'lon
+  const item = {
     firstName: $("firstName").value.trim(),
     lastName: $("lastName").value.trim(),
     phone, type: $("type").value,
     district: $("district").value.trim(),
     price: $("price").value.trim(),
     desc: $("desc").value.trim(),
-    lat: regPos.lat, lng: regPos.lng
-  });
-  saveData(data);
-  $("msg").textContent = "Saqlandi ✓ Endi sizni qidiruvda topishadi.";
+    lat: regPos.lat, lng: regPos.lng,
+    updated: Date.now()
+  };
+  db.collection("providers").doc(id).set(item)
+    .then(() => { $("msg").textContent = "Saqlandi ✓ Endi sizni hamma qidiruvda topadi."; })
+    .catch(err => { $("msg").textContent = "Saqlab bo‘lmadi: " + err.message; });
   $("regForm").reset();
   regPos = null;
   $("regLocInfo").textContent = "aniqlanmagan";
 };
 
 renderChips();
+// Real vaqtda: kimdir ro'yxatdan o'tsa, hamma ekranida darhol chiqadi
+db.collection("providers").onSnapshot(
+  snap => { allProviders = snap.docs.map(d => d.data()); render(); },
+  err => { $("list").innerHTML = '<div class="card muted">Ma’lumotni o‘qib bo‘lmadi: ' + escapeHtml(err.message) + '</div>'; }
+);
 render();
