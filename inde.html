@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Texnika — yaqin atrofdagi texnikani toping</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <header>
+    <h1>🚜 Texnika</h1>
+    <p>Traktor, kombayn, Labo va KamAZ — eng yaqinini toping</p>
+  </header>
+
+  <nav>
+    <button id="btnSearch" class="tab active">🔍 Qidirish</button>
+    <button id="btnReg" class="tab">📝 Ro‘yxatdan o‘tish</button>
+  </nav>
+
+  <main>
+    <!-- QIDIRISH -->
+    <section id="secSearch">
+      <div class="card">
+        <button id="btnLoc" class="btn">📍 Mening joylashuvim</button>
+        <span id="locInfo" class="muted">Joylashuvni yoqsangiz, eng yaqinlari birinchi chiqadi</span>
+        <input id="searchText" placeholder="Ism yoki tuman bo‘yicha qidirish">
+        <div id="chips" class="chips"></div>
+      </div>
+      <div id="list"></div>
+    </section>
+
+    <!-- RO'YXATDAN O'TISH -->
+    <section id="secReg" class="hidden">
+      <form id="regForm" class="card">
+        <div class="row">
+          <label>Ism <input id="firstName" required></label>
+          <label>Familiya <input id="lastName" required></label>
+        </div>
+        <label>Telefon raqam
+          <input id="phone" type="tel" placeholder="+998 90 123 45 67" required>
+        </label>
+        <label>Qanday ish qilasiz?
+          <select id="type"></select>
+        </label>
+        <label>Tuman / qishloq <input id="district"></label>
+        <label>Narx (ixtiyoriy) <input id="price" placeholder="1 ga — 300 000 so‘m"></label>
+        <label>Izoh (ixtiyoriy) <textarea id="desc" rows="2"></textarea></label>
+        <button type="button" id="btnRegLoc" class="btn">📍 Joylashuvimni aniqlash</button>
+        <span id="regLocInfo" class="muted">aniqlanmagan</span>
+        <button type="submit" class="btn primary">Saqlash</button>
+        <p id="msg" class="muted"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
